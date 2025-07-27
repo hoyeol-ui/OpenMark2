@@ -1,0 +1,20 @@
+# 파이썬 바이트코드
+__pycache__/
+*.py[cod]
+
+# 가상환경 폴더
+.venv/
+env/
+venv/
+
+# Outputs, uploads, weights 폴더
+outputs/
+uploads/
+watermark/weights/
+
+# IDE 설정 파일
+.idea/
+.vscode/
+
+# macOS 시스템 파일
+.DS_Store
