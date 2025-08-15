@@ -1,20 +1,42 @@
-# 파이썬 바이트코드
+# ===== Python 기본 =====
 __pycache__/
 *.py[cod]
+*.pyo
+*.so
 
-# 가상환경 폴더
-.venv/
-env/
+# ===== 가상환경 =====
 venv/
+env/
+.venv/
 
-# Outputs, uploads, weights 폴더
+# ===== 데이터셋 & 대용량 파일 =====
+data/
 outputs/
 uploads/
 watermark/weights/
 
-# IDE 설정 파일
-.idea/
-.vscode/
+# ===== 캐시/로그/임시 파일 =====
+*.log
+*.tmp
+*.swp
+*.DS_Store
 
-# macOS 시스템 파일
-.DS_Store
+# ===== IDE/에디터 =====
+.vscode/
+.idea/
+
+# ===== Jupyter/IPython =====
+.ipynb_checkpoints/
+*.ipynb
+
+# ===== 모델/실험 결과 =====
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.onnx
+*.json
+*.tar.gz
+*.zip
+*.npy
+*.npz

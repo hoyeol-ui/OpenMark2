@@ -1,9 +1,53 @@
+from __future__ import annotations
 # watermark/models/common.py
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torchvision.transforms as transforms
+import numpy as np
+import cv2
+import torch
 
+
+def cv2_read_bgr(path: str):
+    img = cv2.imread(path)
+    if img is None:
+        raise FileNotFoundError(path)
+    return img
+
+def bgr_to_tensor(img_bgr, device="cpu", input_range="0_1"):
+    rgb = cv2.cvtColor(img_bgr, cv2.COLOR_BGR2RGB).astype(np.float32) / 255.0
+    t = torch.from_numpy(rgb).permute(2, 0, 1).unsqueeze(0).to(device)
+    if input_range == "-1_1":
+        t = t * 2.0 - 1.0
+    return t
+
+def tensor_to_bgr(t: "torch.Tensor", input_range="0_1"):
+    if input_range == "-1_1":
+        t = (t + 1.0) * 0.5
+    t = t.detach().clamp(0, 1).squeeze(0).permute(1, 2, 0).cpu().numpy()
+    rgb = (t * 255.0 + 0.5).astype(np.uint8)
+    return cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
+
+def str_to_bits(s: str, n_bits: int) -> np.ndarray:
+    n_bytes = n_bits // 8
+    data = s.encode("utf-8")
+    if len(data) > n_bytes:
+        data = data[:n_bytes]
+    elif len(data) < n_bytes:
+        data = data + b"\x00" * (n_bytes - len(data))
+    bits = np.unpackbits(np.frombuffer(data, dtype=np.uint8))
+    return bits[:n_bits].astype(np.float32)
+
+def bits_to_str(bits: np.ndarray) -> str:
+    bits = bits.astype(np.uint8)
+    # 8의 배수 길이만 안전. 나머지 잘라냄.
+    n_trim = (bits.size // 8) * 8
+    by = np.packbits(bits[:n_trim], bitorder="big").tobytes()
+    try:
+        return by.decode("utf-8", errors="strict").rstrip("\x00")
+    except Exception:
+        return by.decode("utf-8", errors="ignore").rstrip("\x00")
 
 class Conv2d(nn.Module):
     def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, bias=True, activ='relu', norm=None):

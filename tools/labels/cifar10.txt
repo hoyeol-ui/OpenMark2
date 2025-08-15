@@ -1,0 +1,10 @@
+airplane   a photo of an airplane
+automobile a photo of an automobile
+bird       a photo of a bird
+cat        a photo of a cat
+deer       a photo of a deer
+dog        a photo of a dog
+frog       a photo of a frog
+horse      a photo of a horse
+ship       a photo of a ship
+truck      a photo of a truck
