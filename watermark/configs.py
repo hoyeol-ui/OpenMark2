@@ -10,10 +10,16 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 UPLOAD_DIR = PROJECT_ROOT / "uploads"
 OUTPUT_DIR = PROJECT_ROOT / "outputs"
 
+ALLOWED_EXTS = {".png", ".jpg", ".jpeg"}  # 필요하면 ".webp", ".bmp" 추가 가능
+
 # === 실행 엔진 토글 ===
 # - "imw"          : imwatermark(DWT+DCT) 방식
 # - "local_invis"  : 로컬 PyTorch 스텁(아키텍처 교체하기 쉬운 뼈대)
 METHOD = "local_invis"   # 우선 imw로 동작 확인 후 "local_invis"로 테스트
+
+# (옵션) 이미지 고정 크기 필요 시
+# IMG_SIZE = (256, 256)  # 예: (256, 256)
+IMG_SIZE = None
 
 # === imwatermark ===
 IMW_METHOD = "dwtDct"
@@ -30,8 +36,8 @@ elif torch.cuda.is_available():
 else:
     DEVICE = "cpu"
 
-# (옵션) 이미지 고정 크기 필요 시
-IMG_SIZE = (256, 256)  # 예: (256, 256)
+# (옵션) 이미지 고정 크기 필요 시 (None 이면 원본 해상도 유지)
+IMG_SIZE: Tuple[int, int] | None = None  # 예: (256, 256)
 
 # === 로컬 Invis(스텁) 설정 ===
 # 문자열을 비트로 변환해 임베드/디코드할 때 사용할 총 비트 수(=모델 출력 차원)
@@ -39,6 +45,37 @@ IMG_SIZE = (256, 256)  # 예: (256, 256)
 LOCAL_INVIS_NUM_BITS = 64
 LOCAL_INVIS_IMAGE_SHAPE = (256, 256)  # (H, W) 테스트용 기본 크기
 LOCAL_INVIS_INPUT_RANGE = "0_1"       # 또는 "-1_1"
+
+# === [신규] 업로드 이미지 크기 정책 ===
+# 권장 변 길이 범위(최소~최대). 너무 작으면 워터마크/방해가 약해질 수 있음.
+RECOMMENDED_SIDE_RANGE: Tuple[int, int] = (800, 3000)   # 권장: 800~3000 px
+# 허용하는 절대 최대 변 길이(이를 초과하면 자동 다운스케일)
+MAX_SIDE_LIMIT: int = 6000                               # 최대: 6000 px
+# MAX 초과 시 자동 다운스케일 여부 (True 권장)
+AUTO_DOWNSCALE_IF_OVER_MAX: bool = True
+
+def ensure_dirs() -> None:
+    UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+# UI 등에서 안내로 사용할 문자열
+def human_size_policy() -> str:
+    lo, hi = RECOMMENDED_SIDE_RANGE
+    return f"권장 이미지 크기: 한 변 {lo}~{hi}px · 최대 한 변 {MAX_SIDE_LIMIT}px"
+
+# UUID를 몇 바이트까지 박을지(=디코더가 뽑을 바이트 수)
+PAYLOAD_BYTES = LOCAL_INVIS_NUM_BITS // 8  # 모델 비트 수와 동기화
+
+# === (옵션) InvisMark 가중치 경로 자리 (나중에 실제 모델로 바꿀 때 사용)
+WEIGHTS_PATH = PROJECT_ROOT / "watermark" / "models" / "weights" / "paper.ckpt"
+
+# 디바이스
+if torch.backends.mps.is_available():
+    DEVICE = "mps"
+elif torch.cuda.is_available():
+    DEVICE = "cuda"
+else:
+    DEVICE = "cpu"
 
 
 # === (참고) 네가 갖고 있던 학습용 Config 클래스 - torch.load 안전 로딩을 위해 유지 ===
