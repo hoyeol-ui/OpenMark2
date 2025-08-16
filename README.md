@@ -3,8 +3,8 @@
 <h1 align="center">OpenMark — Protect + Disrupt (원샷)</h1>
 
 <p align="center">
-  <strong>눈에 안 보이는 워터마크(UUID) + 학습 방해(Disrupt)</strong>를 버튼 한 번으로.<br/>
-  원본과 육안상 거의 동일한 품질을 유지하면서, 모델 학습 정렬을 흔들어줍니다.
+  <strong>눈에 안 보이는 워터마크(UUID) + 학습 방해(Disrupt)</strong>를 클릭 한 번으로 부여!<br/>
+  원본과 육안상 거의 동일한 품질을 유지하면서, 대형 인공지능 모델들의 학습으로 부터 내 콘텐츠를 지켜줍니다.
 </p>
 
 
@@ -16,8 +16,8 @@
 - **원샷 처리**: 이미지 업로드 → *Protect(워터마크)* → *Disrupt* → 결과/UUID/진단 출력
 - **워터마크 복원 보장**: 삽입 직후 내부 디코딩으로 검증하고, 필요시 자동 보정
 - **육안 품질 유지**: 평균 PSNR ≈ 44dB(기본값), 고주파 노이즈 억제
-- **학습 방해(Disrupt)**: CLIP 정렬을 흔드는 경량 EOT-PGD, JPEG/리사이즈에 일부 강건
-- **진단 시각화**: Residual Heatmap / FFT / Overlay로 “모델이 본 변화”를 확인
+- **학습 방해(Disrupt)**: LLM 학습을 방해하는 경량 EOT-PGD 부여, JPEG/리사이즈에 일부 강건함 확인
+- **진단 시각화**: Residual Heatmap / FFT / Overlay로 “인공지능 시점”을 확인
 
 <p align="center">
   <img src="./docs/20250816%20result.png" alt="demo result" width="85%" />
