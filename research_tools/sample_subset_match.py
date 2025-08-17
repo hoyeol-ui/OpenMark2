@@ -1,4 +1,4 @@
-# tools/sample_subset_match.py
+# research_tools/sample_subset_match.py
 from __future__ import annotations
 import argparse, random, shutil
 from pathlib import Path

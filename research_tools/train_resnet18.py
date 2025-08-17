@@ -1,4 +1,4 @@
-# tools/train_resnet18.py
+# research_tools/train_resnet18.py
 from __future__ import annotations
 import argparse, json, random, time
 from pathlib import Path

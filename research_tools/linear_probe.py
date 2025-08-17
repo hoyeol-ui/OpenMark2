@@ -1,4 +1,4 @@
-# tools/linear_probe.py
+# research_tools/linear_probe.py
 from __future__ import annotations
 import argparse, json
 from pathlib import Path

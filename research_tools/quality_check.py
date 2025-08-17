@@ -1,4 +1,4 @@
-# tools/quality_check.py
+# research_tools/quality_check.py
 from __future__ import annotations
 import argparse
 from pathlib import Path

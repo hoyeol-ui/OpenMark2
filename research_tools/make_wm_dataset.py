@@ -1,4 +1,4 @@
-# tools/make_wm_dataset.py
+# research_tools/make_wm_dataset.py
 from __future__ import annotations
 import argparse, os, random, shutil
 from pathlib import Path

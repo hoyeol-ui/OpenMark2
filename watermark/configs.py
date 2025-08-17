@@ -1,34 +1,33 @@
 # OpenMark / watermark / configs.py
+from __future__ import annotations
 from pathlib import Path
 from typing import Tuple
 import torch
 
-# 프로젝트 루트
+# ---- 경로
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
+UPLOAD_DIR   = PROJECT_ROOT / "uploads"
+OUTPUT_DIR   = PROJECT_ROOT / "outputs"
 
-# 입출력
-UPLOAD_DIR = PROJECT_ROOT / "uploads"
-OUTPUT_DIR = PROJECT_ROOT / "outputs"
+# ---- 파일/방식
+ALLOWED_EXTS = {".png", ".jpg", ".jpeg"}  # 필요 시 확장 가능
+METHOD = "local_invis"                    # "imw" | "local_invis"
 
-ALLOWED_EXTS = {".png", ".jpg", ".jpeg"}  # 필요하면 ".webp", ".bmp" 추가 가능
+# ---- (옵션) 고정 해상도: None이면 원본 유지
+IMG_SIZE: Tuple[int, int] | None = None   # 예: (256, 256)
 
-# === 실행 엔진 토글 ===
-# - "imw"          : imwatermark(DWT+DCT) 방식
-# - "local_invis"  : 로컬 PyTorch 스텁(아키텍처 교체하기 쉬운 뼈대)
-METHOD = "local_invis"   # 우선 imw로 동작 확인 후 "local_invis"로 테스트
+# ---- imwatermark
+IMW_METHOD        = "dwtDct"
+IMW_PAYLOAD_BYTES = 64                    # UUID+여유
 
-# (옵션) 이미지 고정 크기 필요 시
-# IMG_SIZE = (256, 256)  # 예: (256, 256)
-IMG_SIZE = None
+# ---- Invis(로컬 스텁/모델 인터페이스)
+LOCAL_INVIS_NUM_BITS   = 64               # 삽입/복원 비트 수
+LOCAL_INVIS_IMAGE_SHAPE = (256, 256)      # 내부 작업 해상도(H, W)
+LOCAL_INVIS_INPUT_RANGE = "0_1"           # 또는 "-1_1"
+PAYLOAD_BYTES = LOCAL_INVIS_NUM_BITS // 8 # 실제 바이트 수
 
-# === imwatermark ===
-IMW_METHOD = "dwtDct"
-IMW_PAYLOAD_BYTES = 64  # UUID+여유
-
-# === (옵션) InvisMark 가중치 경로 자리 (나중에 실제 모델로 바꿀 때 사용)
+# ---- 가중치/디바이스
 WEIGHTS_PATH = PROJECT_ROOT / "watermark" / "models" / "weights" / "paper.ckpt"
-
-# 디바이스
 if torch.backends.mps.is_available():
     DEVICE = "mps"
 elif torch.cuda.is_available():
@@ -36,55 +35,26 @@ elif torch.cuda.is_available():
 else:
     DEVICE = "cpu"
 
-# (옵션) 이미지 고정 크기 필요 시 (None 이면 원본 해상도 유지)
-IMG_SIZE: Tuple[int, int] | None = None  # 예: (256, 256)
-
-# === 로컬 Invis(스텁) 설정 ===
-# 문자열을 비트로 변환해 임베드/디코드할 때 사용할 총 비트 수(=모델 출력 차원)
-# 논문은 최대 256bit. 여기선 기본 256bit(=32바이트)로 맞춤.
-LOCAL_INVIS_NUM_BITS = 64
-LOCAL_INVIS_IMAGE_SHAPE = (256, 256)  # (H, W) 테스트용 기본 크기
-LOCAL_INVIS_INPUT_RANGE = "0_1"       # 또는 "-1_1"
-
-# === [신규] 업로드 이미지 크기 정책 ===
-# 권장 변 길이 범위(최소~최대). 너무 작으면 워터마크/방해가 약해질 수 있음.
-RECOMMENDED_SIDE_RANGE: Tuple[int, int] = (800, 3000)   # 권장: 800~3000 px
-# 허용하는 절대 최대 변 길이(이를 초과하면 자동 다운스케일)
-MAX_SIDE_LIMIT: int = 6000                               # 최대: 6000 px
-# MAX 초과 시 자동 다운스케일 여부 (True 권장)
-AUTO_DOWNSCALE_IF_OVER_MAX: bool = True
+# ---- 업로드 이미지 크기 정책
+RECOMMENDED_SIDE_RANGE: Tuple[int, int] = (800, 3000)  # 권장: 800~3000 px
+MAX_SIDE_LIMIT: int = 6000                              # 최대 한 변
+AUTO_DOWNSCALE_IF_OVER_MAX: bool = True                 # 초과 시 자동 축소
 
 def ensure_dirs() -> None:
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# UI 등에서 안내로 사용할 문자열
 def human_size_policy() -> str:
     lo, hi = RECOMMENDED_SIDE_RANGE
     return f"권장 이미지 크기: 한 변 {lo}~{hi}px · 최대 한 변 {MAX_SIDE_LIMIT}px"
 
-# UUID를 몇 바이트까지 박을지(=디코더가 뽑을 바이트 수)
-PAYLOAD_BYTES = LOCAL_INVIS_NUM_BITS // 8  # 모델 비트 수와 동기화
-
-# === (옵션) InvisMark 가중치 경로 자리 (나중에 실제 모델로 바꿀 때 사용)
-WEIGHTS_PATH = PROJECT_ROOT / "watermark" / "models" / "weights" / "paper.ckpt"
-
-# 디바이스
-if torch.backends.mps.is_available():
-    DEVICE = "mps"
-elif torch.cuda.is_available():
-    DEVICE = "cuda"
-else:
-    DEVICE = "cpu"
-
-
-# === (참고) 네가 갖고 있던 학습용 Config 클래스 - torch.load 안전 로딩을 위해 유지 ===
+# ---- (참고) 학습용 Config 클래스: torch.load 호환 위해 유지
 class ModelConfig:
     log_dir: str = './logs/'
     ckpt_path: str = './ckpts/'
     saved_ckpt_path: str = ''
     world_size: int = 1
-    lr: float = 0.0002
+    lr: float = 2e-4
     num_epochs: int = 50
     log_interval: int = 400
     num_encoded_bits: int = 100
@@ -92,7 +62,7 @@ class ModelConfig:
     num_down_levels: int = 4
     num_initial_channels: int = 32
     batch_size: int = 32
-    beta_min: float = 0.0001
+    beta_min: float = 1e-4
     beta_max: float = 10.0
     beta_start_epoch: float = 1
     beta_epochs: int = 15

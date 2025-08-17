@@ -1,4 +1,6 @@
 # watermark/test_model.py
+#InvisMark 소스를 로컬에서 테스트 하기 위해 사용한 파일,
+#테스트 목적의 파일이라 현재 사용되지 않음.
 from __future__ import annotations
 
 import argparse

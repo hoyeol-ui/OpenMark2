@@ -1,4 +1,4 @@
-# tools/plot_runs.py
+# research_tools/plot_runs.py
 from __future__ import annotations
 import argparse, json
 from pathlib import Path
