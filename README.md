@@ -5,6 +5,14 @@
   원본과 육안상 거의 동일한 품질을 유지하면서, 대형 인공지능 모델들의 학습으로부터 내 콘텐츠를 지켜줍니다.
 </p>
 
+
+## References
+
+- OpenAI CLIP: https://github.com/openai/CLIP  
+- Microsoft InvisMark: https://github.com/microsoft/InvisMark  
+- Radford et al., "Learning Transferable Visual Models From Natural Language Supervision", ICML 2021.  
+- Zhang et al., "InvisMark: Invisible and Robust Watermarking for AI-generated Image Provenance", CVPR 2024.  
+
 ---
 
 ## ✨ 특징
