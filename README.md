@@ -14,6 +14,15 @@
 
 ---
 
+##  주요 기능  
+- **One-Shot 처리**: 이미지 업로드 → Protect(워터마크) → Disrupt → 결과 + UUID 출력  
+- **Invisible Watermark (UUID)** 복원 보장  
+- **HVS 기반 시각 가드**, PSNR 기준 자동 스케일 조정  
+- **Residual Heatmap / FFT / Overlay** 진단 시각화 제공  
+- **CLIP 기반 Zero-Shot 교란 검증**
+
+---
+
 ## ✨ 특징
 
 - **원샷 처리**: 이미지 업로드 → *Protect(워터마크)* → *Disrupt* → 결과/UUID/진단 출력
@@ -21,6 +30,17 @@
 - **육안 품질 유지**: 평균 PSNR ≈ 42-44dB(기본값), 고주파 노이즈 억제
 - **학습 방해(Disrupt)**: LLM 학습을 방해하는 경량 EOT-PGD 부여, JPEG/리사이즈에 일부 강건함 확인
 - **진단 시각화**: Residual Heatmap / FFT / Overlay로 “인공지능 시점”을 확인
+
+---
+
+## 용어 설명
+-  UUID: 이미지에 숨겨진 고유 식별자(텍스트). 추적 및 인증에 사용.
+-  Residual Heatmap: 이미지 간 미세 차이를 색으로 표현한 맵.
+-  FFT: 주파수 영역 상의 분포. 숨겨진 패턴 확인 유용.
+-  Overlay: 차이를 원본 위에 과장해서 보여주는 시각 피드.
+-  PSNR: (원본 vs 처리) 화질 손실 지표, 좋을수록 품질 우수.
+
+---
 
 <p align="center">
   <img src="./docs/20250816%20result.png" alt="demo result" width="85%" />
