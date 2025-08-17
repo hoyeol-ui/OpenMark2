@@ -17,7 +17,8 @@ from .vision import disrupt_once, make_diagnostics, clip_available
 
 # ---- constants
 _EMBED_HEX_LEN = ((LOCAL_INVIS_NUM_BITS + 7) // 8) * 2  # 삽입 바이트수 * 2 (hex길이)
-DEFAULT_STEPS, DEFAULT_EPS, DEFAULT_ALPHA = 1, 2/255, 1/255
+#DEFAULT_STEPS, DEFAULT_EPS, DEFAULT_ALPHA = 1, 2/255, 1/255
+DEFAULT_STEPS, DEFAULT_EPS, DEFAULT_ALPHA = 2, 4/255, 1.3/255
 
 # ---- small helpers
 def _safe_name(p: Path) -> tuple[str, str]:

@@ -11,11 +11,17 @@ from tqdm import tqdm
 def load_labels_map(path: Path) -> Tuple[List[str], Dict[str, str]]:
     names, prompts = [], {}
     for line in path.read_text(encoding="utf-8").splitlines():
-        line=line.strip()
-        if not line or line.startswith("#"): continue
-        a,b = line.split(None,1)
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = line.split(None, 1)  # 공백 기준 2칼럼 시도
+        if len(parts) == 1:
+            a = parts[0]
+            b = a  # 프롬프트를 클래스명으로 대체(폴백)
+        else:
+            a, b = parts
         names.append(a)
-        prompts[a]=b.strip()
+        prompts[a] = b.strip()
     return names, prompts
 
 @torch.inference_mode()
